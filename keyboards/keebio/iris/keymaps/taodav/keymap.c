@@ -12,6 +12,11 @@ enum custom_keycodes {
   RAISE,
   ADJUST,
   GUI_GRV,
+  CTL_UP,
+  CTL_DOWN,
+  CMD_ENT,
+  CMD_ALT_ENT,
+  CMD_CIRC_ENT
 };
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
@@ -34,11 +39,11 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   //┌────────┬────────┬────────┬────────┬────────┬────────┐                          ┌────────┬────────┬────────┬────────┬────────┬────────┐
      KC_GRV,  KC_EXLM, KC_AT,   KC_HASH, KC_DLR,  KC_PERC,                            KC_CIRC, KC_AMPR, KC_ASTR, KC_LPRN, KC_RPRN, KC_DEL,
   //├────────┼────────┼────────┼────────┼────────┼────────┤                          ├────────┼────────┼────────┼────────┼────────┼────────┤
-     _______, KC_1,    KC_2,    KC_UP,   KC_4,    KC_5,                               KC_6,    KC_7,    KC_8,    KC_LBRC, KC_RBRC, KC_PLUS,
+     KC_TILD, KC_1,    KC_2,    KC_UP,   KC_4,    KC_5,                               KC_6,    KC_7,    KC_LBRC, KC_RBRC, _______, KC_PLUS,
   //├────────┼────────┼────────┼────────┼────────┼────────┤                          ├────────┼────────┼────────┼────────┼────────┼────────┤
-     KC_LSFT, _______, KC_LEFT, KC_DOWN, KC_RGHT, KC_LBRC,                            KC_LCBR, KC_LCBR, KC_LCBR, KC_LCBR, KC_RCBR, KC_PIPE,
+     KC_LSFT, _______, KC_LEFT, KC_DOWN, KC_RGHT, KC_LBRC,                            KC_LCBR, KC_LCBR, KC_LPRN, KC_RPRN, KC_BSLS, KC_PIPE,
   //├────────┼────────┼────────┼────────┼────────┼────────┼────────┐        ┌────────┼────────┼────────┼────────┼────────┼────────┼────────┤
-     BL_STEP, _______, _______, _______, KC_DOWN, KC_LCBR, KC_LPRN,          KC_RPRN, KC_RCBR, KC_P1,   KC_P2,   KC_P3,   KC_MINS, _______,
+     BL_STEP, _______, _______, _______, KC_DOWN, KC_LCBR, KC_LPRN,          KC_RPRN, KC_RCBR, KC_P1,   KC_LCBR, KC_RCBR, KC_MINS, _______,
   //└────────┴────────┴────────┴───┬────┴───┬────┴───┬────┴───┬────┘        └───┬────┴───┬────┴───┬────┴───┬────┴────────┴────────┴────────┘
                                     _______, _______, KC_DEL,                    KC_DEL,  _______, KC_RGUI
                                 // └────────┴────────┴────────┘                 └────────┴────────┴────────┘
@@ -50,11 +55,11 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   //├────────┼────────┼────────┼────────┼────────┼────────┤                          ├────────┼────────┼────────┼────────┼────────┼────────┤
      KC_VOLU, KC_EXLM, KC_PGUP, KC_UP,   KC_PGDN, KC_END,                             KC_CIRC, KC_AMPR, KC_ASTR, KC_LPRN, KC_RPRN, KC_F12,
   //├────────┼────────┼────────┼────────┼────────┼────────┤                          ├────────┼────────┼────────┼────────┼────────┼────────┤
-     KC_VOLD, KC_MPRV, KC_LEFT, KC_DOWN, KC_RGHT, KC_HOME,                            KC_EQL,  KC_HOME, RGB_HUI, RGB_SAI, RGB_VAI, KC_BSLS,
+     KC_VOLD, KC_MPRV, KC_LEFT, KC_DOWN, KC_RGHT, KC_HOME,                            KC_EQL,  CTL_UP,  CTL_DOWN,RGB_SAI, RGB_VAI, KC_BSLS,
   //├────────┼────────┼────────┼────────┼────────┼────────┼────────┐        ┌────────┼────────┼────────┼────────┼────────┼────────┼────────┤
      KC_MUTE, KC_MSTP, KC_MPLY, KC_HOME, KC_PGUP, KC_MINS, KC_LPRN,          _______, KC_PLUS, KC_END,  RGB_HUD, RGB_SAD, RGB_VAD, QK_BOOT,
   //└────────┴────────┴────────┴───┬────┴───┬────┴───┬────┴───┬────┘        └───┬────┴───┬────┴───┬────┴───┬────┴────────┴────────┴────────┘
-                                    _______, _______, _______,                   _______, _______, _______
+                                    _______, _______, _______,                   _______, CMD_ENT, CMD_ALT_ENT
                                 // └────────┴────────┴────────┘                 └────────┴────────┴────────┘
   ),
 
@@ -113,6 +118,32 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
       if (record->event.pressed) {
         SEND_STRING(SS_LGUI("`"));
       }
+      return false;
+      break;
+    case CTL_UP:
+      if (record->event.pressed) {
+        SEND_STRING(SS_DOWN(X_LCTL)SS_TAP(X_UP)SS_UP(X_LCTL));
+      }
+      return false;
+      break;
+    case CTL_DOWN:
+      if (record->event.pressed) {
+        SEND_STRING(SS_DOWN(X_LCTL)SS_TAP(X_DOWN)SS_UP(X_LCTL));
+      }
+      return false;
+      break;
+    case CMD_ENT:
+      if (record->event.pressed) {
+        SEND_STRING(SS_DOWN(X_LGUI)SS_TAP(X_ENT)SS_UP(X_LGUI));
+      }
+      return false;
+      break;
+    case CMD_ALT_ENT:
+      if (record->event.pressed) {
+        SEND_STRING(SS_DOWN(X_LGUI)SS_DOWN(X_RALT)SS_TAP(X_ENT)SS_UP(X_RALT)SS_UP(X_LGUI));
+      }
+      return false;
+      break;
   }
   return true;
 };
